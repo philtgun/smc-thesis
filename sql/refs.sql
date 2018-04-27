@@ -19,3 +19,4 @@ SELECT nspname || '.' || relname AS "relation",
         AND relaname LIKE 'mfcc'
   ORDER BY pg_relation_size(C.oid) DESC
   LIMIT 20;
+
