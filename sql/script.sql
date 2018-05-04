@@ -10,4 +10,6 @@ CREATE INDEX lowlevel_json_10k_mfcc_gist_idx ON lowlevel_json_10k USING gist(cub
 
 DROP INDEX lowlevel_json_10k_mfcc_gist_idx;
 
+
+
 INSERT INTO highlevel_model_1k SELECT * FROM highlevel_model WHERE highlevel

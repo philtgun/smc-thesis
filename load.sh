@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-curl -H 'Content-Type: application/x-ndjson' -XPOST 'localhost:9200/ab-test/data/_bulk?pretty' --data-binary @data/lowlevel_json_3.json
+curl -H 'Content-Type: application/json' -XPOST 'localhost:9200/test/data' -d @tiny-data/pretty-data.json

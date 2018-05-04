@@ -2,32 +2,21 @@
 SELECT distinct highlevel FROM highlevel_model_1k limit 20;
 
 DROP FUNCTION vec(int, int);
+DROP FUNCTION cvec(jsonb);
 
-CREATE OR REPLACE FUNCTION vec(int, int) RETURNS float[]
+CREATE OR REPLACE FUNCTION cvec(jsonb) RETURNS cube
 LANGUAGE sql IMMUTABLE
 AS
 $$
-  SELECT ARRAY(SELECT (jsonb_each_text(data->'all')).value::float - 1. / (SELECT count(*) FROM jsonb_each(data->'all')))
-  FROM highlevel_model_1k WHERE model=$2 AND highlevel=$1;
+  SELECT cube(ARRAY(SELECT (jsonb_each_text($1->'all')).value::float - 1. / (SELECT count(*) FROM jsonb_each($1->'all'))));
 $$;
 
-CREATE OR REPLACE FUNCTION vec_prob(int, int) RETURNS float[]
-LANGUAGE sql IMMUTABLE
-AS
-$$
-  SELECT ARRAY(SELECT (jsonb_each_text(data->'all')).value::float)
-  FROM highlevel_model_1k WHERE model=$2 AND highlevel=$1;
-$$;
+SELECT cvec(data) FROM highlevel_model_1k WHERE highlevel=1546799 AND model=3;
 
+CREATE INDEX highlevel_model_1k_cvec_gist_idx ON highlevel_model_1k USING gist(cvec(data));
+DROP INDEX highlevel_model_1k_cvec_gist_idx;
 
-SELECT (jsonb_each_text(data->'all')).value::float - 1. / (SELECT count(*) FROM jsonb_each(data->'all'))
-FROM highlevel_model_1k WHERE model=3 AND highlevel=1546799;
-
-
-SELECT * FROM unnest(vec(1546799, 3), vec(1546799, 3)) AS t(x,y);
-
-
-CREATE OR REPLACE FUNCTION dot(float[], float[]) RETURNS float
+CREATE OR REPLACE FUNCTION dot(cube, cube) RETURNS float
 LANGUAGE plpgsql IMMUTABLE
 AS
 $$
@@ -42,6 +31,26 @@ END LOOP;
 RETURN sum;
 END
 $$;
+
+CREATE OR REPLACE FUNCTION dist_pearson(cube, cube) RETURNS float
+LANGUAGE sql IMMUTABLE
+AS
+$$
+  SELECT dot(vec($1, $3), vec($2, $3))  / sqrt(dot(vec($1, $3), vec($1, $3)) * dot(vec($2, $3), vec($2, $3)))
+$$;
+
+CREATE OPERATOR <%>
+
+
+
+SELECT (jsonb_each_text(data->'all')).value::float - 1. / (SELECT count(*) FROM jsonb_each(data->'all'))
+FROM highlevel_model_1k WHERE model=3 AND highlevel=1546799;
+
+
+SELECT * FROM unnest(vec(1546799, 3), vec(1546799, 3)) AS t(x,y);
+
+
+
 
 CREATE OR REPLACE FUNCTION pearson_sqr(int, int, int) RETURNS float
 LANGUAGE sql IMMUTABLE
