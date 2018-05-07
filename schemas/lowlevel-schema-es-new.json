@@ -1,9 +1,6 @@
 {
   "mappings": {
-    "_source": {
-      "enabled" : false
-    },
-    "data": {
+    "lowlevel_data": {
       "properties": {
         "mbid": {
           "type": "keyword"
