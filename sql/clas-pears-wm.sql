@@ -66,10 +66,25 @@ SELECT dot(vec(1546800, 3), vec(1546801, 3));
 SELECT vec(1546800, 3), vec(1546801, 3);
 
 EXPLAIN ANALYSE
-SELECT id
+SELECT id,
+--   clas_pears_wm(id, 1546800) as dist
+  pearson(id, 1546800, 3) as dist
 FROM highlevel_model_1k AS highlevel_model
-ORDER BY clas_pears_wm(id, 1546800)
+ORDER BY dist
 LIMIT 10;
+
+-- 19s
+-- 27826868
+-- 27826869
+-- 27826870
+-- 27826871
+-- 27826872
+-- 27826873
+-- 27826874
+-- 27826875
+-- 27826876
+-- 27826867
+
 
 CREATE OR REPLACE FUNCTION clas_pears_wm(int, int) RETURNS float
 LANGUAGE sql IMMUTABLE

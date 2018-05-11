@@ -36,15 +36,20 @@ CREATE OR REPLACE FUNCTION dist_pearson(cube, cube) RETURNS float
 LANGUAGE sql IMMUTABLE
 AS
 $$
-  SELECT dot(vec($1, $3), vec($2, $3))  / sqrt(dot(vec($1, $3), vec($1, $3)) * dot(vec($2, $3), vec($2, $3)))
+  SELECT abs(($1->1) - ($2->1))
 $$;
-
-CREATE OPERATOR <%>
 
 
 
 SELECT (jsonb_each_text(data->'all')).value::float - 1. / (SELECT count(*) FROM jsonb_each(data->'all'))
 FROM highlevel_model_1k WHERE model=3 AND highlevel=1546799;
+
+EXPLAIN ANALYSE
+SELECT id
+FROM highlevel_model_1k as highlevel_model
+WHERE model=3
+ORDER BY dist_pearson(cvec(data), (SELECT cvec(data) FROM highlevel_model_1k WHERE model=3 AND highlevel=1546799))
+LIMIT 10;
 
 
 SELECT * FROM unnest(vec(1546799, 3), vec(1546799, 3)) AS t(x,y);
