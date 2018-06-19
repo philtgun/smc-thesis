@@ -1,20 +1,43 @@
 import numpy as np
+import numpy.linalg as la
 import matplotlib.pyplot as plt
 import scipy.spatial.distance as dist
 
+probs = np.arange(0, 1, 0.01)
 theta = np.arange(0, np.pi, 0.01)
-cos = 1 - np.cos(theta)
-eucl = 2 * np.sin(theta / 2)
-manh = np.abs(np.sin(theta)) + np.abs(np.cos(theta) - 1)
-cheb = [dist.chebyshev([0, 1], [np.sin(phi), np.cos(phi)]) for phi in theta]
+
+
+def uniform_angle():
+    return np.array([[np.cos(phi), np.sin(phi)] for phi in theta])
+
+
+def prob_vector():
+    return np.array([[1 - p, p] for p in probs])
+
+
+def sub_mean(vectors):
+    return np.array([vector - vector.mean() for vector in vectors])
+
+
+def norm(vectors):
+    return np.array([vector / la.norm(vector) for vector in vectors])
+
+
+distances = {
+    'Cosine': dist.cosine,
+    'Manhattan (L1)': dist.cityblock,
+    'Euclidean (L2)': dist.euclidean,
+    'Chebushev (L-inf)': dist.chebyshev
+}
 
 plt.figure(figsize=[8, 4])
-plt.plot(theta, cos)
-plt.plot(theta, eucl)
-plt.plot(theta, manh)
-plt.plot(theta, cheb)
+for name, func in distances.items():
+    vals = np.array([func([1, 0], vector) for vector in sub_mean(prob_vector())])
+    vals = vals / vals.max()
+    plt.plot(probs, vals)
+
 plt.grid()
-plt.legend(['Cosine', 'Euclidean', 'Manhattan', 'Chebushev'])
+plt.legend(distances.keys())
 plt.title('Distance comparison')
-plt.savefig('dist.png')
+plt.savefig('pears.png', bbox_inches='tight')
 plt.show()
