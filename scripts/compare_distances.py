@@ -3,7 +3,7 @@ import numpy.linalg as la
 import matplotlib.pyplot as plt
 import scipy.spatial.distance as dist
 
-probs = np.arange(0, 1, 0.01)
+probs = np.arange(0, 1, 0.011)
 theta = np.arange(0, np.pi, 0.01)
 
 
@@ -32,8 +32,8 @@ distances = {
 
 plt.figure(figsize=[8, 4])
 for name, func in distances.items():
-    vals = np.array([func([1, 0], vector) for vector in sub_mean(prob_vector())])
-    vals = vals / vals.max()
+    vals = np.array([func([1, 0], vector) for vector in norm(sub_mean(prob_vector()))])
+    # vals = vals / vals.max()
     plt.plot(probs, vals)
 
 plt.grid()
