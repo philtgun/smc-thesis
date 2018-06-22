@@ -15,3 +15,19 @@ $$
   SELECT $1->'metadata'->'tags'->'musicbrainz_recordingid'->>0 as mbid
 $$;
 
+CREATE EXTENSION IF NOT EXISTS plsql;
+
+CREATE OR REPLACE FUNCTION vector_bpm(jsonb) RETURNS DOUBLE PRECISION[]
+LANGUAGE plpgsql IMMUTABLE
+AS
+$$
+DECLARE temp double precision;
+DECLARE result double precision[];
+BEGIN
+  temp := $1->'rhythm'->'bpm';
+  temp := log(2.0, temp::numeric);
+  RETURN ARRAY[cos(temp), sin(temp)];
+END
+$$;
+
+SELECT vector_bpm(data) FROM lowlevel_json_1k LIMIT 1;

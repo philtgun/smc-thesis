@@ -9,8 +9,11 @@ ds = DataSet()
 data_file = 'data/lowlevel_json_10k.json'
 
 counter = 0
-limit = 3000
+limit = 1000
 step = 100
+
+# descriptors = ['lowlevel.*', 'rhythm.*', 'tonal.*']
+descriptors = ['rhythm.bpm']
 
 print('Loading data', end='')
 with open(data_file) as infile:
@@ -19,7 +22,7 @@ with open(data_file) as infile:
             data = loads(line)
 
             p = Point()
-            p.loadFromString(safe_dump(data), ['lowlevel.*', 'rhythm.*', 'tonal.*'])
+            p.loadFromString(safe_dump(data), descriptors)
 
             p.setName('item' + str(counter))
             ds.addPoint(p)
