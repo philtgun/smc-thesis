@@ -9,11 +9,16 @@ ds = DataSet()
 data_file = 'data/lowlevel_json_10k.json'
 
 counter = 0
-limit = 1000
-step = 100
+limit = 10000
+step = 1000
 
 # descriptors = ['lowlevel.*', 'rhythm.*', 'tonal.*']
-descriptors = ['rhythm.bpm']
+descriptors = [
+    'rhythm.bpm',
+    'rhythm.onset_rate',
+    'lowlevel.mfcc.mean',
+    'lowlevel.gfcc.mean'
+]
 
 print('Loading data', end='')
 with open(data_file) as infile:
@@ -39,6 +44,15 @@ with open(data_file) as infile:
             break
 
 
+def get_memory(context):
+    memory = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+    print('Memory ({}): {} mb'.format(context, float(memory)/1000))
 
-memory = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
-print('Memory peak: {} mb'.format(float(memory)/1000))
+
+get_memory('Dataset')
+
+dist = DistanceFunctionFactory.create('euclidean', ds.layout())
+view = View(ds, dist)
+similar = view.nnSearch('item0').get(10)
+
+get_memory('Metric and view')

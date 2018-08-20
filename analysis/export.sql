@@ -1,0 +1,1 @@
+COPY similarity_eval(query_mbid, metric, rating) TO '/tmp/results.csv' DELIMITER ',' CSV HEADER;

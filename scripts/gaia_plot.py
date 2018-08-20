@@ -21,5 +21,6 @@ plt.grid(which='major', linestyle='-')
 plt.title('Gaia memory usage')
 plt.xlabel('Number of points')
 plt.ylabel('Memory usage (MB)')
+plt.savefig('gaia.png', bbox_inches='tight')
 plt.show()
 
