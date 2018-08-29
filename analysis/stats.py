@@ -2,7 +2,7 @@ import csv
 import numpy as np
 import matplotlib.pyplot as plt
 
-filename = 'results.csv'
+filename = 'results_20180829.csv'
 data = []
 with open(filename, 'r') as fp:
     reader = csv.reader(fp, delimiter=',')
@@ -61,6 +61,7 @@ def plot(data, keys, labels, title, filename):
 
 
 for category, metrics in metrics_all.items():
-    plot(results, metrics, metrics, 'BROAD evaluation ({})'.format(category), 'broad_{}.png'.format(category))
+    plot(results, metrics, metrics, 'BROAD evaluation ({})'.format(category), 'broad-{}.png'.format(category))
 
-plot(bias_recording, bias_recording.keys(), bias_recording.keys(), 'Mean evaluation score per track', 'broad_bias.png')
+plot(bias_recording, bias_recording.keys(), [s[:4] for s in bias_recording.keys()], 'Mean evaluation score per track',
+     'broad-bias.png')
